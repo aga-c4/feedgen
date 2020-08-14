@@ -18,20 +18,6 @@ if (!defined("InStock_Dealers")) define('InStock_Dealers',2); //- наличие
 if (!defined("InStock_Production")) define('InStock_Production',1); //- можно заказать производство
 if (!defined("InStock_Empty")) define('InStock_Empty',0); //- нет наличия
 
-//Внимание! Значения констант используются при формировании пути к шаблонам вывода!
-//define('FIDTYPE_Google','google');
-//define('FIDTYPE_FB','facebook');
-//define('FIDTYPE_Addigital','addigital');
-define('FIDTYPE_YandexMarket','yml');
-//define('FIDTYPE_Beru','beru');
-//define('FIDTYPE_MMarket','mmarket');
-//define('FIDTYPE_ICML','icml');
-//define('FIDTYPE_Wikimart','wikimart');
-//define('FIDTYPE_Criteo','criteo');
-define('FIDTYPE_CSV','csv');
-define('FIDTYPE_JSON','json');
-//define('FIDTYPE_SiteMap','sitemap');
-
 define("FEEDS_FILESPATH", APP_STORAGEFILEPATH.'feeds/');
 define("FEEDS_TMP_FILESPATH", APP_DUMPPATH.'modules/feedgen/');
 define("FEEDS_LOGSPATH", APP_LOGSPATH.'feedgen/');
