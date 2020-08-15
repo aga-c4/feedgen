@@ -1390,7 +1390,6 @@ class Feedgen {
             if (false===$this->getParam('use_oldprice',false) || empty($prodInfo['oldprice'])) $prodInfo['oldprice'] = null;
             if (false===$this->getParam('use_barcode',false)) $prodInfo['barcode'] = null;
             if (false===$this->getParam('use_1c_code',false)) $prodInfo['1c_id'] = null;
-            if (false===$this->getParam('use_params',false)) $prodInfo['params'] = null;
             if (false===$this->getParam('use_marker',false)) $prodInfo['marker'] = null;     
             if (false===$this->getParam('use_profit',false)) $prodInfo['profit'] = null;
             if (false===$this->getParam('use_profit_pr',false)) $prodInfo['profit_pr'] = null;
@@ -1657,7 +1656,7 @@ class Feedgen {
         
         $customParamsArr = $this->getParam('customParams',false);
         if (!is_array($customParamsArr) || !count($customParamsArr)) return $prodInfo;
-        if (!is_array($prodInfo['params'])) $prodInfo['params'] = array();
+        if (!isset($prodInfo['params']) || !is_array($prodInfo['params'])) $prodInfo['params'] = array();            
         foreach ($customParamsArr as $customParam) {
             if (!isset($customParam['param']) || !is_array($customParam['param'])) continue;
             $paramOk = false;
@@ -1698,6 +1697,45 @@ class Feedgen {
      */
     private function updParams($prodInfo){
         if (!is_array($prodInfo)) return $prodInfo;
+        //"use_params" => Вывести в фид параметры (false/true/limit/filter).
+        $use_params = $this->getParam('use_params',false);
+        if (false===$use_params) return $prodInfo;
+        
+        if (isset(self::$catArr[$prodInfo["cat_id"]]) 
+                && isset(self::$catArr[$prodInfo["cat_id"]]["attr"]) 
+                && is_array(self::$catArr[$prodInfo["cat_id"]]["attr"])
+                && isset(self::$prodAttr[$prodInfo["prod_id"]])) {
+            
+            if (!isset($prodInfo['params']) || !is_array($prodInfo['params'])) $prodInfo['params'] = array();
+            foreach (self::$catArr[$prodInfo["cat_id"]]["attr"] as $attrId) {
+                
+                if (isset(self::$prodAttrType["$attrId"]) && isset(self::$prodAttr[$prodInfo["prod_id"]]["$attrId"])) {
+                    $prodAttrType = self::$prodAttrType["$attrId"];
+                    $prodAttrVal = self::$prodAttr[$prodInfo["prod_id"]]["$attrId"];
+                    
+                    if ($use_params==='limit' && empty($prodAttrType['short'])) continue;
+                    if ($use_params==='filter' && empty($prodAttrType['filter'])) continue;
+                    
+                    //array('id'=>'Нужна обрешетка', 'code'=>'nuzhna_obreshetka', 'name'=>'Нужна обрешетка', 'value'=>'да', 'val_id'=>null),
+                    $customParam = array('id'=>$prodAttrType['id']);
+                    if (isset($prodAttrType['alias'])) $customParam['code'] = $prodAttrType['alias']; 
+                    if (isset($prodAttrType['name'])) $customParam['name'] = $prodAttrType['name']; 
+                    
+                    if (isset($prodAttrType['type']) && $prodAttrType['type']==='list'){
+                        if (isset($prodAttrType['values']) && is_array($prodAttrType['values']) && isset($prodAttrType['values']["$prodAttrVal"])) {
+                            $customParam['value'] = $prodAttrType['values']["$prodAttrVal"]["value"];
+                            $customParam['val_id'] = $prodAttrVal;
+                        }
+                    }else{
+                        $customParam['value'] = $prodAttrVal;
+                    }           
+                    
+                    if (isset($customParam['value'])) $prodInfo['params'][] = $customParam;
+                }
+                
+            }
+        }
+        
         return $prodInfo;
     }
     

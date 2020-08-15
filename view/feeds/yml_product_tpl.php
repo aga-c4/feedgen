@@ -60,10 +60,13 @@ if (isset($item['pickup_options']) && is_array($item['pickup_options'])){
 if (isset($item['params']) && is_array($item['params'])){ 
     foreach ($item['params'] as $inItem) {
         $tplBlock .= '    <param';
-        if (isset($inItem['id'])) $tplBlock .= ' id="'.$inItem['id'] .'"';
+        //if (isset($inItem['id'])) $tplBlock .= ' id="'.$inItem['id'] .'"';
         if (isset($inItem['code'])) $tplBlock .= ' code="'.$inItem['code'] .'"';
         if (isset($inItem['name'])) $tplBlock .= ' name="'.$inItem['name'] .'"';
-        $tplBlock .= '>'.$inItem['value'].'</param>'."\n";    
+        //if (isset($inItem['val_id'])) $tplBlock .= ' val_id="'.$inItem['val_id'] .'"';
+        $tplBlock .= '>';
+        if (isset($inItem['value'])) $tplBlock .= $inItem['value'];
+        $tplBlock .= '</param>'."\n";    
     }
 }
 if (isset($item['prod_custom'])) $tplBlock .= $item['prod_custom']."\n";

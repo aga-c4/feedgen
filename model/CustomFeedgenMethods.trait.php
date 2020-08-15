@@ -100,15 +100,14 @@ trait CustomFeedgenMethods {
         
         //Подгрузим данные из кеша
         if ($useCache) {
-            self::$attrArr = self::getCache('attrArr');
+            self::$prodAttr = self::getCache('prodAttr');
             self::$prodAttrType = self::getCache('attrTypeArr');
         }
         
-        if (self::$attrArr !== null) {
-            SysLogs::addLog('Feedgen: Attr array already exist');
+        if (self::$prodAttrType !== null) {
+            SysLogs::addLog('Feedgen: Attr types array already exist');
         }else{            
             ##################[ Формирование массива атрибутов ]################
-            self::$prodAttr = array();
             self::$prodAttrType = array();
             
             //Для теста жестко установим значения ------------------------------
@@ -119,32 +118,42 @@ trait CustomFeedgenMethods {
             self::$prodAttrType = array(
                 "1" => array("id"=>"1","sort"=>1,"name"=>"Параметр1","alias"=>"param1","type"=>"value","filter"=>false,"short"=>true),
                 "2" => array("id"=>"2","sort"=>100,"name"=>"Параметр2","alias"=>"param2","type"=>"value","filter"=>false,"short"=>false),
-                "3" => array("id"=>"3","sort"=>100,"name"=>"Параметр2","alias"=>"param2","type"=>"value","filter"=>true,"short"=>true, "value"=>array(
+                "3" => array("id"=>"3","sort"=>100,"name"=>"Параметр3","alias"=>"param3","type"=>"list","filter"=>true,"short"=>true, "values"=>array(
                     "1" => array("id"=>1,"alias"=>"Val1","value"=>"Value1"),
                     "2" => array("id"=>2,"alias"=>"Val2","value"=>"Value2"),
                     "3" => array("id"=>3,"alias"=>"Val3","value"=>"Value3"),
                 )),
             );
             
+            if ($useCache) {
+                self::setCache('attrTypeArr',self::$prodAttrType,$cacheLag);
+            }
+            SysLogs::addLog('Feedgen: Attr type array generate Ok!');
+        }
+         
+        
+        if (self::$prodAttr !== null) {
+            SysLogs::addLog('Feedgen: Attr array already exist');
+        }else{
+            self::$prodAttr = array();
+            
             //Параметры товаров в привязкам к фильтрамФормат {"prodid"=>{"typeid"=>123, "value"=>""}}
-            self::$prodAttr = array(
+            self::$prodAttr = array(   
                 "28603" => array( //категория 28770
-                    array("typeid"=>"1", "value"=>111),
-                    array("typeid"=>"2", "value"=>"Str1"),
-                    array("typeid"=>"3", "value"=>"1"),
+                    "1" => 111,
+                    "2" => "Str1",
+                    "3" => "1",
                 ),
                 "23982" => array( //категория 28770
-                    array("typeid"=>"1", "value"=>222),
-                    array("typeid"=>"2", "value"=>"Str2"),
-                    array("typeid"=>"3", "value"=>"2"),
+                    "1" => 222,
+                    "2" => "Str2",
+                    "3" => "2",
                 )
             );
             //------------------------------------------------------------------
             
-            ##################[ /Формирование массива категорий ]###############
             if ($useCache) {
-                self::setCache('attrArr',self::$attrArr,$cacheLag);
-                self::setCache('attrTypeArr',self::$prodAttrType,$cacheLag);
+                self::setCache('prodAttr',self::$prodAttr,$cacheLag);
             }
             SysLogs::addLog('Feedgen: Attr array generate Ok!');
         }

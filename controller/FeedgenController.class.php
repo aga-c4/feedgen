@@ -44,8 +44,8 @@ Don\'t print Space near "="
 
 ';
 
-        //if ($tpl_mode=='html'){$help_txt = "<pre>$help_txt</pre>";}
-        if ($tpl_mode=='html'){$help_txt = "FeedGen!";}
+        if ($tpl_mode=='html'){$help_txt = "<pre>$help_txt</pre>";}
+        //if ($tpl_mode=='html'){$help_txt = "FeedGen!";}
 
         //Установим глобальные метатеги для данной страницы
         Glob::$vars['page_title'] = 'Help'; //Метатег title
