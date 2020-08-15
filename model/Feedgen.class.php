@@ -629,6 +629,8 @@ class Feedgen {
         $this->generateProducts();
         $this->generateActions();
         $this->generateVendors();
+        //$this->generateOutletsList();
+        //$this->generateOutletsStock();
         $this->generateFooter();
         
         if ($saveToFile) {
@@ -866,6 +868,31 @@ class Feedgen {
         SysLogs::addLog('Feedgen: attrArr generate Ok!');
         return $result;
     }    
+    
+    /**
+     * Генерация списка складов по регионам
+     * @return bool результат операции
+     */
+    private function generateOutletsList(){
+        if (!$this->getParam('use_outlets_list', true)) return false;
+        
+        
+        SysLogs::addLog('Feedgen: outlets list generate Ok!');
+        return $result;
+    }    
+    
+    /**
+     * Генерация наличия и цены по разным реальным складам
+     * @return bool результат операции
+     */
+    private function generateOutletsStock(){
+        if (!$this->getParam('use_outlets_stock', true)) return false;
+        
+        
+        SysLogs::addLog('Feedgen: outlets stock generate Ok!');
+        return $result;
+    }    
+    
     
     /**
      * Генерация списка товаров
