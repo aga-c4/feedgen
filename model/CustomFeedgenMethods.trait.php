@@ -336,16 +336,16 @@ trait CustomFeedgenMethods {
                 //Подключим картинки (к сожалению придется посмотреть в папках)
                 $item['picture_arr'] = array(
                     'small' => array(
-                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1min.jpg','watermark'=>true),
+                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1min.jpg','watermark'=>true,'width'=>640,'height'=>480),
                     ),
                     'medium' => array(
-                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1.jpg','watermark'=>true),
+                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1.jpg','watermark'=>true,'width'=>1024,'height'=>768),
                     ),
                     'big' => array(
-                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg','watermark'=>true),
+                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg','watermark'=>true,'width'=>1280,'height'=>1024),
                     ),
-                    'gpic' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg','watermark'=>false),
-                    'gpicw' => null,
+                    'gpic' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg','watermark'=>false,'width'=>600,'height'=>600),
+                    'gpicw' => null, //Если есть гуглевое изображение с водяным знаком. то сюда его.
                 );
                 
                 //Установка статусов наличия
@@ -402,6 +402,7 @@ trait CustomFeedgenMethods {
     
     /**
      * Дорабатывает данные о товаре в соответствии с настройками фида, выполняется после updateProdInfo()
+     * работает, если определен после основной обработки данных товара.
      * @param type $prodInfo массив данных о товаре
      * @return mixed - либо массив данных о товаре, либо false, если нет возможности его сформировать
      */
@@ -411,4 +412,18 @@ trait CustomFeedgenMethods {
         return $prodInfo;
     }
     */
+    
+    /**
+     * Генерация кастомных блоков фида, здесь вы можете сформировать свои блоки по аналогии с тем,
+     * как это делается в основном классе. Можно с рендером (шаблоны можно задать из конфига), можно без него.
+     * В идеале соблюдать приемственность схемы работы с конфигом.
+     * @return boolean результат операции
+     */
+    private function genCustomBlocks() {
+        
+
+        SysLogs::addLog('Feedgen: Custom blocks generate Ok!');
+        return true;
+    }
+
 } 

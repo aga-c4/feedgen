@@ -629,8 +629,7 @@ class Feedgen {
         $this->generateProducts();
         $this->generateActions();
         $this->generateVendors();
-        //$this->generateOutletsList();
-        //$this->generateOutletsStock();
+        $this->generateCustomBlocks();
         $this->generateFooter();
         
         if ($saveToFile) {
@@ -873,26 +872,14 @@ class Feedgen {
      * Генерация списка складов по регионам
      * @return bool результат операции
      */
-    private function generateOutletsList(){
-        if (!$this->getParam('use_outlets_list', true)) return false;
+    private function generateCustomBlocks(){
+        if (!$this->getParam('use_custom_blocks', true)) return false;
         
+        $this->genCustomBlocks(); //Запуск обертки генератора кастомных блоков из трейта
         
-        SysLogs::addLog('Feedgen: outlets list generate Ok!');
         return $result;
     }    
-    
-    /**
-     * Генерация наличия и цены по разным реальным складам
-     * @return bool результат операции
-     */
-    private function generateOutletsStock(){
-        if (!$this->getParam('use_outlets_stock', true)) return false;
         
-        
-        SysLogs::addLog('Feedgen: outlets stock generate Ok!');
-        return $result;
-    }    
-    
     
     /**
      * Генерация списка товаров
@@ -2097,6 +2084,8 @@ class Feedgen {
         $picSize = $this->getParam('pic_size','big','routeitem'); //"pic_size" => "big", //Размер картинки (small по-умолчанию, medium, big)
         $picNums = $this->getParam('pic_nums',0,'int'); //Количество выводимых изображений, если 0, то все.
         $picWatermark = $this->getParam('pic_watermark',false); //'all' - добавлять любую, watermark - добавлять только с вод.знаками, nowatermark - добавлять кроме водяных знаков
+        $pic_real_maxSize = $this->getParam('pic_real_maxSize',false); //Макс.разм типа array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
+        $pic_real_minSize = $this->getParam('pic_real_minSize',false); //Мин.разм array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
         
         //Подключим картинки
         $pictureArr = $prodInfo['picture_arr'];
@@ -2108,7 +2097,7 @@ class Feedgen {
             
             $pictureArr['gpic']['url'] = $this->finUpdURL($pictureArr['gpic']['url'], 'prod_img');
         
-            if ($picWatermark==='watermark' && isset($pictureArr['gpicw']) && is_array($pictureArr['gpic'])) $result[] = $pictureArr['gpic'];
+            if ($picWatermark==='watermark' && isset($pictureArr['gpicw']) && is_array($pictureArr['gpicw'])) $result[] = $pictureArr['gpicw'];
             elseif (isset($pictureArr['gpic']) && is_array($pictureArr['gpic'])) $result[] = $pictureArr['gpic'];
             $pCnt++;
         }
@@ -2120,6 +2109,38 @@ class Feedgen {
                         || ($picWatermark==='watermark' && !empty($pArr['watermark'])) 
                         || ($picWatermark==='nowatermark' && empty($pArr['watermark'])))) {
                     $pArr['url'] = $this->finUpdURL($pArr['url'],'prod_img');
+                    
+                    //Блокировка изображений по размеру
+                    $picSizeStr = '';
+                    $curPhotoSize = false;
+                    if (!empty($pArr['width']) && !empty($pArr['height'])){
+                        $curPhotoSize = array('w'=>$pArr['width'], 'h'=>$pArr['height']);
+                    }
+                    if ($curPhotoSize){
+                        $curPhotoMaxSize = ($curPhotoSize['w']>$curPhotoSize['h'])?$curPhotoSize['w']:$curPhotoSize['h'];
+                        $curPhotoMinSize = ($curPhotoSize['w']<$curPhotoSize['h'])?$curPhotoSize['w']:$curPhotoSize['h'];
+                        if (is_array($pic_real_maxSize)) {
+                            if (isset($pic_real_maxSize['w']) && $curPhotoSize['w']>$pic_real_maxSize['w']) continue;
+                            if (isset($pic_real_maxSize['h']) && $curPhotoSize['h']>$pic_real_maxSize['h']) continue;
+                            if (isset($pic_real_maxSize['maxside']) && $curPhotoMaxSize>$pic_real_maxSize['maxside']) continue;
+                            if (isset($pic_real_maxSize['minside']) && $curPhotoMinSize>$pic_real_maxSize['minside']) continue;
+                        }
+                        if (is_array($pic_real_minSize)) {
+                            if (isset($pic_real_minSize['w']) && $curPhotoSize['w']<$pic_real_minSize['w']) continue;
+                            if (isset($pic_real_minSize['h']) && $curPhotoSize['h']<$pic_real_minSize['h']) continue;
+                            if (isset($pic_real_minSize['maxside']) && $curPhotoMaxSize<$pic_real_minSize['maxside']) continue;
+                            if (isset($pic_real_minSize['minside']) && $curPhotoMinSize<$pic_real_minSize['minside']) continue;
+                        }
+                    }else{//Если нет размера изображения, при этом есть исключения по размерам, то не выводим изображение
+                        if (is_array($pic_real_maxSize) || is_array($pic_real_minSize)) continue;
+                    }
+        
+                    //Блокировка вывода размера изображения
+                    if (false===$this->getParam('pic_size_view',false)) {
+                        unset($pArr['width']);
+                        unset($pArr['height']);
+                    }
+
                     $result[] = $pArr;
                 }
                 $pCnt++;
@@ -2129,7 +2150,7 @@ class Feedgen {
         if (count($result)) $prodInfo['picture'] = $result;
         else $prodInfo['picture'] = false;
         
-        //Блокировка по отсутствию изображений
+        //Блокировка товаров по отсутствию изображений
         if (true ===$this->getParam('only_picture_complete',false) && $prodInfo['picture']===false) return false;
         
         return $prodInfo;      
@@ -2247,34 +2268,11 @@ class Feedgen {
     private function getTplFileName($tplType){
         $result = true;
         
-        $defTplFile = false;
-        if ($tplType==='header'){
-            $defTplFile = $this->getParam('tpl_header',false);
-        }elseif ($tplType==='footer'){
-            $defTplFile = $this->getParam('tpl_footer',false);
-        }elseif ($tplType==='cat_header'){
-            $defTplFile = $this->getParam('tpl_cat_header',false);
-        }elseif ($tplType==='cat_footer'){
-            $defTplFile = $this->getParam('tpl_cat_footer',false);
-        }elseif ($tplType==='category'){
-            $defTplFile = $this->getParam('tpl_category',false);
-        }elseif ($tplType==='vend_header'){
-            $defTplFile = $this->getParam('tpl_vend_header',false);
-        }elseif ($tplType==='vend_footer'){
-            $defTplFile = $this->getParam('tpl_vend_footer',false);
-        }elseif ($tplType==='vendor'){
-            $defTplFile = $this->getParam('tpl_vendor',false);
-        }elseif ($tplType==='prod_header'){
-            $defTplFile = $this->getParam('tpl_prod_header',false);
-        }elseif ($tplType==='prod_footer'){
-            $defTplFile = $this->getParam('tpl_prod_footer',false);
-        }elseif ($tplType==='product'){
-            $defTplFile = $this->getParam('tpl_product',false);
-        }
+        $tplFile = false;
+        $tpl_arr = $this->getParam('tpl_arr',array());  
+        if (!empty($tpl_arr[$tplType])) $tplFile = $tpl_arr[$tplType]; 
         
-        $tplFile = $this->getParam("tpl_$tplType", $defTplFile);
-        
-        if (!empty($defTplFile)){
+        if (!empty($tplFile)){
             $thisModuleName = Glob::$vars['module'];
             $userFileName = USER_MODULESPATH . $thisModuleName . '/view/feeds/' . $tplFile;
             $appFileName = APP_MODULESPATH . $thisModuleName . '/view/feeds/' . $tplFile;

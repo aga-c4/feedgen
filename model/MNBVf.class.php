@@ -1878,7 +1878,7 @@ class MNBVf {
                                 },<?=$timeout;?>);
                             });
                         </script>
-                    <?
+                    <?php
                     }
                 }else{
                     if (!empty($viewArr["pre"])) echo "<pre>";

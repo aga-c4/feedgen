@@ -29,7 +29,14 @@ if (isset($item['currency'])) $tplBlock .= '    <currencyId>'.$item['currency'].
 if (isset($item['cat_id'])) $tplBlock .= '    <categoryId>'.$item['cat_id'] .'</categoryId>'."\n";
 
 if (isset($item['picture']) && is_array($item['picture'])) {
-    foreach ($item['picture'] as $inItem) $tplBlock .= '    <picture>'.$inItem['url'] .'</picture>'."\n";
+    foreach ($item['picture'] as $inItem) {
+        $tplBlock .= '    <picture';
+        if (isset($inItem['width'])) $tplBlock .= ' width="'.$inItem['width'] .'"';
+        if (isset($inItem['height'])) $tplBlock .= ' height="'.$inItem['height'] .'"';
+        $tplBlock .= '>';
+        if (isset($inItem['url'])) $tplBlock .= $inItem['url'];
+        $tplBlock .= '</picture>'."\n";
+    }
 }
 
 if (isset($item['delivery'])) $tplBlock .= '    <delivery>'.((!empty($item['delivery']))?'true':'false') .'</delivery>'."\n";

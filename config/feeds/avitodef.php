@@ -54,20 +54,11 @@ $feedConfArr = array(
     ),
     
     //Параметры шаблонов формирования
-    "tpl_header" => "avito_header_tpl.php",
-    "tpl_footer" => "avito_footer_tpl.php",
-    "tpl_cat_header" => false,
-    "tpl_cat_footer" => false,
-    "tpl_category" => false,
-    "tpl_vend_header" => false,
-    "tpl_vend_footer" => false,
-    "tpl_vendor" => false,
-    "tpl_prod_header" => false,
-    "tpl_prod_footer" => false,
-    "tpl_product" => "avito_product_tpl.php",
-    "tpl_actions_header" => false,
-    "tpl_actions_footer" => false,
-    "tpl_action" => false,
+    "tpl_arr" => array( 
+        "header" => "avito_header_tpl.php",
+        "footer" => "avito_footer_tpl.php",
+        "product" => "avito_product_tpl.php",
+    ),
 );
         
         

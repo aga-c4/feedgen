@@ -36,8 +36,7 @@ $feedConfArr = array(
     "root_cat_view" => false, //Показывать в каталоге рутовую категорию (по-умолчанию не показывается)
     "use_vendors" => false, //Вывод вендоров: false - не выводить, true - выводить, 
     "use_products" => true, //Вывод товаров: false - не выводить, true - выводить, 'allReg' - выводить по всем регионам в один фид (последнее чуть позже включится) 
-    "use_outlets_list" => false, //Пока не реализовано! Вывод списка всех складов во всех регионах 
-    "use_outlets_stock" => false, //Пока не реализовано! Вывод наличия и цены товаров по всем складам
+    "use_custom_blocks" => false, //Вывод пользовательских блоков (определяются в трейте CustomFeedgenMethods.trait.php) 
     "use_attr_list" => false, //Пока не реализовано! Вывод блока атрибутов (false/true/limit/filter).
     "reg" => '', //Принудительная установка региона
     "currency" => "RUR", //Валюта цен фида
@@ -70,21 +69,23 @@ $feedConfArr = array(
     "utm_template" => 'utm_source={#refer}&utm_medium=cpc&utm_campaign={#refer}_{#reg}',
     "use_actions" => false, //Маркер показа акций в xml файле по стандарту Яндекса    
     
-    //Параметры шаблонов формирования
-    "tpl_header" => "yml_header_tpl.php",
-    "tpl_footer" => "yml_footer_tpl.php",
-    "tpl_cat_header" => "yml_cat_header_tpl.php",
-    "tpl_cat_footer" => "yml_cat_footer_tpl.php",
-    "tpl_category" => "yml_category_tpl.php",
-    "tpl_vend_header" => "yml_vend_header_tpl.php",
-    "tpl_vend_footer" => "yml_vend_footer_tpl.php",
-    "tpl_vendor" => "yml_vendor_tpl.php",
-    "tpl_prod_header" => "yml_prod_header_tpl.php",
-    "tpl_prod_footer" => "yml_prod_footer_tpl.php",
-    "tpl_product" => "yml_product_tpl.php",
-    "tpl_actions_header" => "yml_actions_header_tpl.php",
-    "tpl_actions_footer" => "yml_actions_footer_tpl.php",
-    "tpl_action" => "yml_action_tpl.php",
+    //Параметры шаблонов формирования блоков, этот механимз можно использовать и для рендеринга кастомных блоков
+    "tpl_arr" => array( 
+        "header" => "yml_header_tpl.php",
+        "footer" => "yml_footer_tpl.php",
+        "cat_header" => "yml_cat_header_tpl.php",
+        "cat_footer" => "yml_cat_footer_tpl.php",
+        "category" => "yml_category_tpl.php",
+        "vend_header" => "yml_vend_header_tpl.php",
+        "vend_footer" => "yml_vend_footer_tpl.php",
+        "vendor" => "yml_vendor_tpl.php",
+        "prod_header" => "yml_prod_header_tpl.php",
+        "prod_footer" => "yml_prod_footer_tpl.php",
+        "product" => "yml_product_tpl.php",
+        "actions_header" => "yml_actions_header_tpl.php",
+        "actions_footer" => "yml_actions_footer_tpl.php",
+        "action" => "yml_action_tpl.php",
+    ),
     
     //Параметры формирования блока товаров (Параметры с префиксом "use_" регулируют формирование xml фида)
     "offerid_type" => 'prodid', //тип идентификаторов предложений (prodid/1cid)
@@ -124,9 +125,9 @@ $feedConfArr = array(
     "pic_size" => "big", //Размер картинки (small по-умолчанию, medium, big)
     "pic_nums" => 0, //Количество выводимых изображений, если 0, то все.
     "pic_watermark" => 'all', //'all' - добавлять любую, watermark - добавлять только с вод.знаками, nowatermark - добавлять кроме водяных знаков
-        "picSizeView" => false, //!!!Пока не доступно!!! Выводить размер в теге изображений
-        "picRealMaxSize" => false, //!!!Пока не доступно!!! Массив максимальных размеров картинки для вывода типа array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
-        "picRealMinSize" => false, //!!!Пока не доступно!!! Массив минимальных размеров картинки для вывода типа array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
+    "pic_size_view" => false, //Выводить размер в теге изображений
+        "pic_real_maxSize" => false, //Массив максимальных размеров картинки для вывода типа array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
+        "pic_real_minSize" => false, //Массив минимальных размеров картинки для вывода типа array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
         
     "use_delivery" => false, //Выводить тег доставки
     "use_delivery_cat" => false, //Выводить категорию доставки
