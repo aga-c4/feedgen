@@ -128,7 +128,8 @@ $feedConfArr = array(
     "pic_size_view" => false, //Выводить размер в теге изображений
     "pic_real_maxSize" => false, //Массив максимальных размеров картинки для вывода типа array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
     "pic_real_minSize" => false, //Массив минимальных размеров картинки для вывода типа array('w'=>700, 'h'=>700, 'maxside'=>123, 'minside'=>123)
-        
+    "pic_add" => false, //Массив дополнительных изображений для данного фида (универсально для всех товаров). Пример: array(array('url'=>'test.jpg','width'=>640,'height'=>480)) 
+    
     "use_delivery" => false, //Выводить тег доставки
     "use_delivery_cat" => false, //Выводить категорию доставки
     "use_delivery_options" => false, //Если есть, то вывести delivery_options. Выводится при включенном use_delivery

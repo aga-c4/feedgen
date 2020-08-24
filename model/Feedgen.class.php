@@ -2153,6 +2153,22 @@ class Feedgen {
             }
         }
         
+        //Дополнительные изображения жестко заданные для всех товаров
+        $pic_add = $this->getParam('pic_add',false);
+        if (is_array($pic_add)) {
+            foreach($pic_add as $pnNum=>$pArr) {
+                if (empty($pArr['url'])) continue;
+                $pArr['url'] = $this->finUpdURL($pArr['url'],'prod_img');
+                //Блокировка вывода размера изображения
+                if (false===$this->getParam('pic_size_view',false)) {
+                    unset($pArr['width']);
+                    unset($pArr['height']);
+                }
+                $result[] = $pArr;
+                $pCnt++;
+            }
+        }
+        
         if (count($result)) $prodInfo['picture'] = $result;
         else $prodInfo['picture'] = false;
         
