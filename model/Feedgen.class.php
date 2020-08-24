@@ -12,6 +12,7 @@ class Feedgen {
     
     use CustomFeedgenMethods;
     
+    
     /**
      * @var int время начала генерации фида 
      */
