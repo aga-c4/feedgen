@@ -1996,6 +1996,11 @@ class Feedgen {
         if (!is_array($prodInfo)) return $prodInfo;  
         $prodInfo['delivery'] = (!empty($prodInfo['delivery']))?true:false;  
         $prodInfo['delivery_cat'] = $this->updXmlStr($prodInfo['delivery_cat']);
+        
+        $delivery_cat_exeptions = $this->getParam('delivery_cat_exeptions',false);
+        if (is_array($delivery_cat_exeptions) && in_array($prodInfo['delivery_cat'],$delivery_cat_exeptions)) {
+            return false;
+        }
         return $prodInfo;
     }
     
