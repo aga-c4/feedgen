@@ -1936,7 +1936,12 @@ class Feedgen {
         
         $useName = $this->getParam('use_name',false);
         $namePostfix = $this->getParam('name_postfix',null);
+        $nameReplace = $this->getParam('name_replace',null);
+        $modelReplace = $this->getParam('model_replace',null);
         if ($useName === 'short') $prodInfo['name'] = $prodInfo['short_name'];
+        if (is_array($nameReplace)) {
+            foreach($nameReplace as $searchStr=>$replaceTo) $prodInfo['name'] = str_replace(strval($searchStr),strval($replaceTo),$prodInfo['name']);
+        }
         else $prodInfo['name'] = $prodInfo['full_name'];
         if (!empty($namePostfix)) $prodInfo['name'] .= ' ' . $namePostfix;
         $prodInfo['name'] = $this->updXmlStr($prodInfo['name']);
@@ -1944,6 +1949,9 @@ class Feedgen {
         $prodInfo['type_prefix'] = $this->updXmlStr($prodInfo['type_prefix']);
         $prodInfo['vendor'] = $this->updXmlStr($prodInfo['vendor']);
         $prodInfo['model'] = $this->updXmlStr($prodInfo['model']);
+        if (is_array($modelReplace)) {
+            foreach($nameReplace as $searchStr=>$replaceTo) $prodInfo['model'] = str_replace(strval($searchStr),strval($replaceTo),$prodInfo['model']);
+        }
                 
         return $prodInfo;
     }
