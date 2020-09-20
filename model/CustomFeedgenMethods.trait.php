@@ -217,7 +217,6 @@ trait CustomFeedgenMethods {
         $use_netto_sw = SysBF::getFrArr($param,'use_netto_sw',false);
         $use_gross_sw = SysBF::getFrArr($param,'use_gross_sw',false);
         $sort_by = SysBF::getFrArr($param,'sort_by',false);
-        $domainImg = SysBF::getFrArr($param,'domain_img',Glob::$vars['feed_conf']['def_domain_img']);
         $imgPAth = '/data/page_doska_ob/';
         
         ##################[ Формирование массива товаров ]################
@@ -327,6 +326,8 @@ trait CustomFeedgenMethods {
                 $item['outlets'] = null;          
                 
                 //Подключим картинки (к сожалению придется посмотреть в папках)
+                $domainImgParam = SysBF::getFrArr($param,'domain_img',Glob::$vars['feed_conf']['def_domain_img']);
+                $domainImg = Feedgen::getRootCatVal($domainImgParam,strval($item['cat_id']));   
                 $item['picture_arr'] = array(
                     'small' => array(
                         '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1min.jpg','watermark'=>true,'width'=>640,'height'=>480),
