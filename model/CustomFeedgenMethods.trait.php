@@ -278,6 +278,11 @@ trait CustomFeedgenMethods {
                 
                 $item['name'] = $item['full_name'];
                 
+                //Карты памяти искусственно перекинем в категорию "Компоненты и принадлежности" чтоб на авито норм привязалось
+                if (false!==strpos(strtolower($prod->name),'Карта памяти')){
+                    $item['cat_id'] = 28768;
+                }
+                
                 $item['url'] = "/tov_$prod->zapid/";
                 
                 $ftov_nds = $prod->nds;
