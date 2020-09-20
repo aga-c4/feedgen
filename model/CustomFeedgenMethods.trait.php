@@ -250,22 +250,6 @@ trait CustomFeedgenMethods {
                 $item['1c_id'] = $prodId = strval($prod->zapid);
                 $item['shop_sku'] = strval($prod->zapid);
                 
-                if (in_array($item['cat_id'],array("30851","31178"))){
-                    $item['avito_cat'] = 'Оргтехника и расходники'; 
-                    $item['avito_goods_type'] = 'Телефония'; 
-                }elseif (in_array($item['cat_id'],array("28748")) && false!==strpos(strtolower($prod->name),'Карта памяти')){
-                    $item['avito_cat'] = 'Товары для компьютера'; 
-                    $item['avito_goods_type'] = 'Флэшки и карты памяти'; 
-                }
-                //elseif (in_array($item['cat_id'],array("28764", "28761", "28768", "28766"))){
-                //    $item['avito_cat'] = 'Товары для компьютера'; 
-                //    $item['avito_goods_type'] = 'Комплектующие'; 
-                //}
-                else{
-                    $item['avito_cat'] = 'Товары для компьютера'; 
-                    $item['avito_goods_type'] = 'Сетевое оборудование';
-                }
-                
                 //$item['offer_available'] = true;
                 
                 $item['offer_bid'] = null;

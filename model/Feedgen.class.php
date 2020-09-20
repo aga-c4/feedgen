@@ -828,7 +828,7 @@ class Feedgen {
      * @return boolean
      */
     private function catViewUpd($catId,$typeVal,$catVal=true){
-        static $itemCounter = 0;
+        static $levelCounter = 0;
         
         //Проапдейтим требуюмую категорию
         if (is_array($catVal)) $curValue = $catVal; else $curValue = true;
@@ -840,20 +840,36 @@ class Feedgen {
             if (!is_array($this->catViewExeptions)) $this->catViewExeptions = array();
             $this->catViewExeptions["$catId"] = $curValue;
             $curAction = 'catnoview';
-        }
+        }  
         
         //Рекурсивно вызовем функцию для нижестоящих
-        $catInfo = self::$catArr["$catId"];
-        
-        $maxCatLevels = SysBF::getFrArr(Glob::$vars['feed_conf'],'max_cat_levels',10);
-        if ($itemCounter<$maxCatLevels 
-                && isset(self::$catArr["$catId"]) && isset(self::$catArr["$catId"]['list']) && is_array(self::$catArr["$catId"]['list'])){
-            $itemCounter++;
-            foreach ($catInfo['list'] as $inCatId) $this->catViewUpd($inCatId,$curAction,$curValue);
-            $itemCounter--;
+        $full_list_upd = false;
+        if (isset(self::$catArr["$catId"])){
+            $catInfo = self::$catArr["$catId"];
+            $catInfo['full_list'] = array();
+
+            $maxCatLevels = SysBF::getFrArr(Glob::$vars['feed_conf'],'max_cat_levels',10);
+            if ($levelCounter<$maxCatLevels 
+                    && isset(self::$catArr["$catId"]) && isset(self::$catArr["$catId"]['list']) && is_array(self::$catArr["$catId"]['list'])){
+                $levelCounter++;
+                $catInfo['full_list'] = $catInfo['list']; //Список всех вложенных ниже категорий и свой id там же
+                foreach ($catInfo['list'] as $inCatId) {
+                    $full_list = $this->catViewUpd($inCatId,$curAction,$curValue);
+                    if ($typeVal==="catview" && $catVal===true){ //Заполняем при первичном прогоне
+                        if (is_array($full_list) && count($full_list)) foreach ($full_list as $value) $catInfo['full_list'][] = $value;
+                        self::$catArr["$catId"]['full_list'] = $catInfo['full_list'];
+                        $full_list_upd = true;
+                    }
+                }
+                $levelCounter--;             
+            }
+        }else{
+            SysLogs::addError("Feedgen Error: catViewUpd cat[$catId] not found! typeVal=[$typeVal] levelCounter=[$levelCounter]");          
         }
-        
-        return true;
+
+        if ($full_list_upd) return $catInfo['full_list'];
+        else return true;
+
     }
 
 
@@ -1969,11 +1985,13 @@ class Feedgen {
         else $prodInfo['description'] = $prodInfo['description_full'];
         
         if ($descr_dop_top = $this->getParam('descr_dop_top',false)){
-            $prodInfo['description'] = $descr_dop_top . $prodInfo['description'];
+            $curVal = Feedgen::getRootCatVal($descr_dop_top,strval($prodInfo['cat_id']));
+            if (null!==$curVal) $prodInfo['description'] = $curVal . $prodInfo['description'];
         }
         
         if ($descr_dop = $this->getParam('descr_dop',false)){
-            $prodInfo['description'] .= $descr_dop;
+            $curVal = Feedgen::getRootCatVal($descr_dop,strval($prodInfo['cat_id']));
+            if (null!==$curVal) $prodInfo['description'] .= $curVal;
         }
         
         $prodInfo['description'] = $this->updXmlStr($prodInfo['description'], array(
@@ -2529,5 +2547,56 @@ class Feedgen {
         return mktime ($tsArr['hour'], $tsArr['minute'], $tsArr['second'], $tsArr['month'], $tsArr['day'], $tsArr['year']);
     }
 
+    /**
+     * Проверяет входит ли заданная категория в список категорий начиная от рута и ниже
+     * @param mixed $rootCat значение идентификатора рутовой категории, либо массив таких значений (строковых)
+     * @param mixed $catId значение идентификатора проверяемой категории
+     * @return bool true, если текущая категория находится под рутом или false, если не найдена
+     */
+    public static function checkFrRootCat($rootCat='',$catId=0){
+        
+        if (empty($catId)) return false;
+        if (!is_array($rootCat) && empty($rootCat)) return false;
+
+        if (is_array($rootCat)){
+            foreach($rootCat as $curCatId){
+                if ($curCatId==$catId) return true;
+                if (isset(self::$catArr["$curCatId"]) && is_array(self::$catArr["$curCatId"])
+                    && isset(self::$catArr["$curCatId"]['full_list']) && is_array(self::$catArr["$curCatId"]['full_list'])
+                    && in_array(strval($catId), self::$catArr["$curCatId"]['full_list'])) {
+                        return true;
+                }
+            }
+        }else{
+            if ($rootCat==$catId) return true;
+            if (isset(self::$catArr["$rootCat"]) && is_array(self::$catArr["$rootCat"])
+                && isset(self::$catArr["$rootCat"]['full_list']) && is_array(self::$catArr["$rootCat"]['full_list'])
+                && in_array(strval($catId), self::$catArr["$rootCat"]['full_list'])) {
+                    return true;
+            }
+        }
+            
+        return false;
+    }
+    
+    /**
+     * Разбирает значен
+     * @param type $param параметр из конфига (массив или значение)
+     * @param mixed $catId значение идентификатора проверяемой категории
+     * @return mixed найденный результат или null, если ничего не найдено root_cats
+     */
+    public static function getRootCatVal($param=array(),$catId=0){
+        if (!is_array($param)) return $param;
+        if (empty($catId)) return false;
+
+        $result = null;
+        foreach ($param as $paramArr){
+            if (!isset($paramArr["value"])) continue;
+            if (!isset($paramArr["root_cats"]) || self::checkFrRootCat($paramArr["root_cats"],$catId)) $result = $paramArr["value"];
+        }
+        
+        return $result;
+        
+    }
 
 } 
