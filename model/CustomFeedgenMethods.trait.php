@@ -249,7 +249,7 @@ trait CustomFeedgenMethods {
                 $item['prod_id'] = $prodId = strval($prod->zapid);
                 $item['1c_id'] = $prodId = strval($prod->zapid);
                 $item['shop_sku'] = strval($prod->zapid);
-                
+                                
                 //$item['offer_available'] = true;
                 
                 $item['offer_bid'] = null;
@@ -272,6 +272,10 @@ trait CustomFeedgenMethods {
                 
                 $item['full_name'] = $prod->name;
                 $item['short_name'] = $item['vendor'] . ' ' . $item['model'];
+                
+                $item['full_name'] = str_replace('Catalyst ','',$item['full_name']);
+                $item['short_name'] = str_replace('Catalyst ','',$item['short_name']);
+                
                 $item['name'] = $item['full_name'];
                 
                 $item['url'] = "/tov_$prod->zapid/";
