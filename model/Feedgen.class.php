@@ -1780,7 +1780,8 @@ class Feedgen {
         
         $priceKoef = $this->getParam('price_koef',false);
         if ($priceKoef !== false){
-            $prodInfo['price'] = round(floatval($priceKoef) * $prodInfo['price']);
+            $curVal = Feedgen::getRootCatVal($priceKoef,strval($prodInfo['cat_id']));
+            if (null!==$curVal) $prodInfo['price'] = round(floatval($curVal) * $prodInfo['price']);
         }
         
         //Расчетные операции-------------------
