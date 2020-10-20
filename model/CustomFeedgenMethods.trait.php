@@ -318,12 +318,13 @@ trait CustomFeedgenMethods {
                 if (strlen($item['description_full'])>3000) $item['description_full'] = '';
                 if (empty($item['description_full'])) $item['description_full'] = $item['description_min'];
                 if (empty($item['description_full'])) $item['description_full'] = $item['name'];
-                $item['description'] = $item['description_full'];
-                
-                $item['partnumber'] = (!empty($prod->partnumber))?$prod->partnumber:'';
                 
                 $item['description_min'] .= "<br>---<br>Артикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
                 $item['description_full'] .= "<br>---<br>Артикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
+                
+                $item['description'] = $item['description_full'];
+                
+                $item['partnumber'] = (!empty($prod->partnumber))?$prod->partnumber:'';
                 
                 $item['descr_cdata']= true;
                 $item['outlets'] = null;          
