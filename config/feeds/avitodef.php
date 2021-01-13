@@ -57,6 +57,8 @@ $feedConfArr = array(
     "tpl_arr" => array( 
         "header" => "avito_header_tpl.php",
         "footer" => "avito_footer_tpl.php",
+        "prod_header" => "blank_tpl.php",
+        "prod_footer" => "blank_tpl.php",
         "product" => "avito_product_tpl.php",
     ),
 );
