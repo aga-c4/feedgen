@@ -1815,6 +1815,10 @@ class Feedgen {
         if ($this->getParam('use_minprice',false) && !empty($minprice) && $prodInfo['price']<$minprice) return false;
         if ($this->getParam('null_price',false) && empty($prodInfo['price'])) return false;  
         
+        //Добавить цену до мин порога
+        $minpriceto = $this->getParam('minpriceto',false);
+        if (!empty($minpriceto) && $prodInfo['price']<$minpriceto) $prodInfo['price'] = $minpriceto;
+        
         if (isset($prodInfo['sales_rate'])){
             $salesRateLimit1 = $this->getParam('sales_rate_limit1',0);
             $salesRateLimit2 = $this->getParam('sales_rate_limit2',0);
