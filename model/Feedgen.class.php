@@ -1973,6 +1973,7 @@ class Feedgen {
         if (is_array($modelReplace)) {
             foreach($nameReplace as $searchStr=>$replaceTo) $prodInfo['model'] = str_replace(strval($searchStr),strval($replaceTo),$prodInfo['model']);
         }
+        $prodInfo['cat_name'] = (!empty(self::$catArr[strval($prodInfo['cat_id'])]['cat_name']))?self::$catArr[strval($prodInfo['cat_id'])]['cat_name']:'';
                 
         return $prodInfo;
     }
