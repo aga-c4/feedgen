@@ -17,11 +17,7 @@
 
 1. Установите фреймворк mnbv.fw ( https://github.com/aga-c4/mnbv.fw ). 
  
-2. Скачайте или склонируйте репозиторий с модулем в отдельную папку. Прилинкуйте
-эту папку в папку модулей фреймворка "modules" с названием "modules/feedgen". 
-Для этого в основной системе перейдите в папку "modules" и выполните примерно 
-следующее
-mklink /j feedgen D:\OSPanel\domains\feedgen\modules\feedgen
+2. Cклонируйте репозиторий с модулем в папку "modules/feedgen" фреймворка. 
 
 3. Скопируйте файл core_router.php в app/modules/core/router.php
 Скорректируйте имеющийся файл, если вам это требуется.
