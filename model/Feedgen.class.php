@@ -878,6 +878,7 @@ class Feedgen {
      * @return bool результат операции
      */
     private function generateAttr(){
+        $result = null;
         if (!$this->getParam('use_attr_list', true)) return false;
         
         
@@ -958,6 +959,20 @@ class Feedgen {
         $useParams = $this->getParam('use_params',false);
         $domainImg = $this->getRegVals('domain_img',$this->getRegConf('domain_img',Glob::$vars['feed_conf']['def_domain_img']));
         if (empty($domainImg)) $domainImg = Glob::$vars['current_domen'];
+
+        $maxProductsArr = array(); //Массив категорий, входящих в рутовые категории
+        $catItemsCounters = array(); //Массив с счетчиками товаров по рутовым категориям
+        if (is_array($maxProducts)) {
+            foreach ($maxProducts as $cat_id=>$cat_lim){
+                $maxProductsArr["$cat_id"] = $cat_id;
+                $catItemsCounters["$cat_id"] = 0;
+                if (isset(self::$catArr["$cat_id"]['full_list']) && is_array(self::$catArr["$cat_id"]['full_list'])) {
+                    foreach (self::$catArr["$cat_id"]['full_list'] as $value) {
+                        $maxProductsArr["$value"] = $cat_id;
+                    }
+                }
+            }
+        }
         
         //Сформируем список товаров в соответствии с конфигом и выдадим пачками
         $prodViewParams = array(
@@ -975,12 +990,18 @@ class Feedgen {
             if (is_array($prodArr)){
                 foreach ($prodArr as $prodInfo) {
                     $prodOut = $this->updateProdInfo($prodInfo);
+                    $cat_id = SysBF::getFrArr($prodInfo,'cat_id',0);
                     if (method_exists($this,'updateProdInfoCustom')) $prodOut = $this->updateProdInfoCustom($prodOut,$prodInfo);
                     if ($prodOut!==false) {
+                        if (is_array($maxProducts) && isset($maxProductsArr["$cat_id"]) && !empty($maxProducts[strval($maxProductsArr["$cat_id"])])) { //Массив с лимитами по рутовым категориям
+                            $curRootCat = strval($maxProductsArr["$cat_id"]);
+                            $catItemsCounters[$curRootCat]++;
+                            if ($catItemsCounters[$curRootCat]>$maxProducts[$curRootCat]) continue;
+                        } elseif (!empty($maxProducts) && $prodViewCounter>$maxProducts) break;
+
                         $this->render($prodOut,'product');
                         $prodViewCounter++;
                         if (!empty($prodOut['vendor_arr']['vend_id'])) $this->vendView[$prodOut['vendor_arr']['vend_id']] = $prodOut['vendor_arr'];
-                        if (!empty($maxProducts) && $prodViewCounter>=$maxProducts) break;
                     }
                 }
             }

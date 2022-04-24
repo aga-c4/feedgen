@@ -162,7 +162,7 @@ $feedConfArr = array(
     "use_netto_split" => false, //Выводить размеры НЕТТО в виде раздельных тегов
     
     //Ограничение по количеству товаров в выдаче
-    "max_products" => false, //Максимальное количество товаров в фиде
+    "max_products" => false, //Максимальное количество товаров в фиде может быть числом, тогда просто ограничение на количество товаров, либо массивом корневых категорий вида array('catid'=>qty,...), где последующие перекрывают предыдущие
     "sort_by" => false, //Сортировка (prodid,catid,price,cost,profit,sales_rate,gross_profit,price_desc,cost_desc,profit_desc,sales_rate_desc,gross_profit_desc)
         
     //Разрешения вывода в фид (если не соблюдается, то предложение не выводится)

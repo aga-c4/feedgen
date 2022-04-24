@@ -319,15 +319,17 @@ trait CustomFeedgenMethods {
                 if (empty($item['description_full'])) $item['description_full'] = $item['description_min'];
                 if (empty($item['description_full'])) $item['description_full'] = $item['name'];
                 
-                $item['description_min'] .= "<br>---<br>Артикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
-                $item['description_full'] .= "<br>---<br>Артикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
+                $item['description_min'] .= "<br>---<br>Код товара: " . $item['prod_id'] . " <br>\nАртикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
+                $item['description_full'] .= "<br>---<br>Код товара: " . $item['prod_id'] . " <br>\nАртикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
                 
                 $item['description'] = $item['description_full'];
                 
                 $item['partnumber'] = (!empty($prod->partnumber))?$prod->partnumber:'';
                 
                 $item['descr_cdata']= true;
-                $item['outlets'] = null;          
+                $item['outlets'] = null;
+
+                $item['site_id'] = $prod->siteid;
                 
                 //Подключим картинки (к сожалению придется посмотреть в папках)
                 $domainImgParam = SysBF::getFrArr($param,'domain_img',Glob::$vars['feed_conf']['def_domain_img']);
