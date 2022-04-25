@@ -319,8 +319,8 @@ trait CustomFeedgenMethods {
                 if (empty($item['description_full'])) $item['description_full'] = $item['description_min'];
                 if (empty($item['description_full'])) $item['description_full'] = $item['name'];
                 
-                $item['description_min'] .= "<br>---<br>Код товара: " . $item['prod_id'] . " <br>\nАртикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
-                $item['description_full'] .= "<br>---<br>Код товара: " . $item['prod_id'] . " <br>\nАртикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
+                $item['description_min'] .= "<br>---<br>Наименование: " . $item['full_name'] . " <br>\nКод товара: " . $item['prod_id'] . " <br>\nАртикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
+                $item['description_full'] .= "<br>---<br>Наименование: " . $item['full_name'] . " <br>\nКод товара: " . $item['prod_id'] . " <br>\nАртикул: " . ((!empty($prod->partnumber))?$prod->partnumber:'') . "<br>---<br>\n";
                 
                 $item['description'] = $item['description_full'];
                 
