@@ -424,7 +424,7 @@ class Feedgen {
         
         //Рекурсивно подцепим родительские параметры фидов
         static $iterCounter = 0;
-        
+
         if (empty($refer)) {
             SysLogs::addError("Feedgen Error: Refer is clear!");
             return false;
@@ -464,7 +464,7 @@ class Feedgen {
             $result = true;
 
         }
-        
+
         SysLogs::addError("Feedgen: Get conf from $confFile " . (($result)?'Ok!':'Error!'));
         return $result;
 
@@ -751,7 +751,7 @@ class Feedgen {
         if ($rootCatView && $itemCounter===0) $no_parentid = true;
         elseif (!$rootCatView && $itemCounter===1) $no_parentid = true;
         
-        $catInfo['cat_name'] = $this->updXmlStr($catInfo['cat_name']);                
+        $catInfo['cat_name'] = (!empty($catInfo['cat_name']))?$this->updXmlStr($catInfo['cat_name']):'';
         $catViewOk = (false===$this->getParam('only_cat_active',false) || !empty(self::$catArr["$catId"]['cat_active']));
         if ($catViewOk && ($rootCatView || $itemCounter>0)  && !empty($catInfo["cat_name"])) $this->render($catInfo,'category',array('no_parentid'=>$no_parentid));    
         
@@ -895,7 +895,7 @@ class Feedgen {
         
         $this->genCustomBlocks(); //Запуск обертки генератора кастомных блоков из трейта
         
-        return $result;
+        return true;
     }    
         
     
