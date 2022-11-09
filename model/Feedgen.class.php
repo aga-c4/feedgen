@@ -424,7 +424,7 @@ class Feedgen {
         
         //Рекурсивно подцепим родительские параметры фидов
         static $iterCounter = 0;
-        
+
         if (empty($refer)) {
             SysLogs::addError("Feedgen Error: Refer is clear!");
             return false;
@@ -751,10 +751,9 @@ class Feedgen {
         if ($rootCatView && $itemCounter===0) $no_parentid = true;
         elseif (!$rootCatView && $itemCounter===1) $no_parentid = true;
         
-        $catInfo['cat_name'] = !empty($catInfo["cat_name"])?$this->updXmlStr($catInfo['cat_name']):'';
-        $catViewOk = (false===$this->getParam('only_cat_active',false) || !empty(self::$catArr["$catId"]['cat_active']));
-        if ($catViewOk && ($rootCatView || $itemCounter>0)  && !empty($catInfo['cat_name'])) $this->render($catInfo,'category',array('no_parentid'=>$no_parentid));
-        
+		$catInfo['cat_name'] = !empty($catInfo["cat_name"])?$this->updXmlStr($catInfo['cat_name']):'';
+		$catViewOk = (false===$this->getParam('only_cat_active',false) || !empty(self::$catArr["$catId"]['cat_active']));
+        if ($catViewOk && ($rootCatView || $itemCounter>0)  && !empty($catInfo['cat_name'])) $this->render($catInfo,'category',array('no_parentid'=>$no_parentid));        
         $catInfo['full_list'] = array();
         $maxCatLevels = SysBF::getFrArr(Glob::$vars['feed_conf'],'max_cat_levels',10);
         if ($itemCounter<$maxCatLevels && isset($catInfo['list']) && is_array($catInfo['list'])){
