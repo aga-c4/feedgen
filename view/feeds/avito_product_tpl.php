@@ -14,7 +14,13 @@ if ($this->getParam('manager_name',false)) $tplBlock .= '<ManagerName>'.$this->g
 
 if ($this->getParam('contact_phone',false)) {//Можно задать просто телефон, либо привязать его к корневым категориям
     $curVal = Feedgen::getRootCatVal($this->getParam('contact_phone',null),strval($item['cat_id']));
-    if (null!==$curVal) $tplBlock .= '<ContactPhone>'.$curVal.'</ContactPhone>'."\n";
+    if (null!==$curVal) {
+        $tplBlock .= '<ContactPhone>'.$curVal.'</ContactPhone>'."\n";
+    }else{ //Нет телефона
+        $tplBlock .= '<ContactMethod>В сообщениях</ContactMethod>'."\n";
+    }
+}else{ //Нет телефона
+    $tplBlock .= '<ContactMethod>В сообщениях</ContactMethod>'."\n";
 }
 
 $tplBlock .= '<Address>' . $this->getParam('address','') . '</Address>'."\n";

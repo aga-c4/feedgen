@@ -22,6 +22,7 @@ trait CustomFeedgenMethods {
      * @return boolean
      */
     private static function genCatArr($param='') {
+        SysLogs::addLog('Feedgen: Categories');
         if (!is_array($param)) $param = array('cache_lag'=>Glob::$vars['feed_conf']['cache_lag']);
         $cacheLag = SysBF::getFrArr($param,'cache_lag',Glob::$vars['feed_conf']['cache_lag'],'intval');
         $useCache = SysBF::getFrArr($param,'use_cache',Glob::$vars['feed_conf']['use_cache']);
@@ -30,19 +31,22 @@ trait CustomFeedgenMethods {
         
         //Подгрузим данные из кеша
         if ($useCache) self::$catArr = self::getCache('categoryArr');
-        
+            SysLogs::addLog('Feedgen: Categories useCache');
         if (self::$catArr !== null) {
             SysLogs::addLog('Feedgen: Categories array already exist');
         }else{            
             ##################[ Формирование массива категорий ]################
+            SysLogs::addLog('Feedgen: Categories Get from DB');
             self::$catArr = array();            
             $myDb = SysStorage::getLink('main');
             $domainImg = SysBF::getFrArr($param,'domain_img',Glob::$vars['feed_conf']['def_domain_img']);
             $imgPAth = '/data/page_doska_ob/';
-            
+
             $res = $myDb->query("select zapid, razdid, name, visible from page_doska_ob where tip=1 order by pozid,name;");
             while ($catInfo = DbMysql::mysql_fetch_object($res)){
+
                 if (!empty($catInfo->zapid)){
+                    SysLogs::addLog('Feedgen: Categories SQL2');
                     if (!isset(self::$catArr["$catInfo->zapid"])) self::$catArr["$catInfo->zapid"] = array();
                     self::$catArr["$catInfo->zapid"]['cat_id'] = strval($catInfo->zapid);
                     self::$catArr["$catInfo->zapid"]['cat_active'] = ($catInfo->visible==='on')?true:false;
@@ -78,7 +82,7 @@ trait CustomFeedgenMethods {
                 
                 }
             }
-            
+
             ##################[ /Формирование массива категорий ]###############
             if ($useCache) self::setCache('categoryArr',self::$catArr,$cacheLag);
             SysLogs::addLog('Feedgen: Categories array generate Ok!');

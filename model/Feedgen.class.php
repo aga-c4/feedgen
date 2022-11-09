@@ -374,7 +374,7 @@ class Feedgen {
         if (!empty($regVals["$this->regAlias"]) && is_array($regVals["$this->regAlias"])){
             SysLogs::addLog('Feedgen: get reg '.$this->regAlias.' regVals');
             $this->regVals = SysBF::arrayRecurMerge($this->regVals,$regVals["$this->regAlias"]);
-        }       
+        }
         
         //Подкорректируем склады текущего региона
         $outletsArr = array();
@@ -464,7 +464,7 @@ class Feedgen {
             $result = true;
 
         }
-        
+
         SysLogs::addError("Feedgen: Get conf from $confFile " . (($result)?'Ok!':'Error!'));
         return $result;
 
@@ -551,7 +551,7 @@ class Feedgen {
      * @return bool результат операции
      */
     public function generate(){
-        
+
         $saveToFile = $this->getParam('save_to_file',false); //Забирается ли фид из файла при отдаче
         //Проверка доступа ---------------------------
         if (!Glob::$vars['console'] && $saveToFile) {
@@ -751,9 +751,9 @@ class Feedgen {
         if ($rootCatView && $itemCounter===0) $no_parentid = true;
         elseif (!$rootCatView && $itemCounter===1) $no_parentid = true;
         
-        $catInfo['cat_name'] = $this->updXmlStr($catInfo['cat_name']);                
+        $catInfo['cat_name'] = !empty($catInfo["cat_name"])?$this->updXmlStr($catInfo['cat_name']):'';
         $catViewOk = (false===$this->getParam('only_cat_active',false) || !empty(self::$catArr["$catId"]['cat_active']));
-        if ($catViewOk && ($rootCatView || $itemCounter>0)  && !empty($catInfo["cat_name"])) $this->render($catInfo,'category',array('no_parentid'=>$no_parentid));    
+        if ($catViewOk && ($rootCatView || $itemCounter>0)  && !empty($catInfo['cat_name'])) $this->render($catInfo,'category',array('no_parentid'=>$no_parentid));
         
         $catInfo['full_list'] = array();
         $maxCatLevels = SysBF::getFrArr(Glob::$vars['feed_conf'],'max_cat_levels',10);
@@ -895,7 +895,7 @@ class Feedgen {
         
         $this->genCustomBlocks(); //Запуск обертки генератора кастомных блоков из трейта
         
-        return $result;
+        return true;
     }    
         
     
@@ -1046,7 +1046,7 @@ class Feedgen {
         
         //Обработки данных товара
         $prodInfo = $this->updStart($prodInfo); //Стартовые преобразования
-        
+
         $prodInfo = $this->updSizeWeight($prodInfo); //Обработка размеров и веса, стоит в начале, т.к. легкая и по ней может быть блокировка
         $prodInfo = $this->updInStock($prodInfo); //Обработка статусов наличия, отключение видимости, связанные элементы
         $prodInfo = $this->updPrice($prodInfo); //Обработка всех видов цен, отключение видимости, связанные элементы
@@ -1058,12 +1058,12 @@ class Feedgen {
         $prodInfo = $this->updSalesNotes($prodInfo);
         $prodInfo = $this->updWarranty($prodInfo);
         $prodInfo = $this->updParams($prodInfo);
-        
+
         $prodInfo = $this->updFin($prodInfo); //Финальные преобразования: отключение видимость xml блоков и предустановленные обработки
         $prodInfo = $this->updCustomParams($prodInfo);
         
         $prodInfo = $this->updCustom($prodInfo); //Пользовательские преобразования     
-        
+
         return $prodInfo;
     }
                     
