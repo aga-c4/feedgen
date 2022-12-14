@@ -57,7 +57,7 @@ trait CustomFeedgenMethods {
                     if (!isset(self::$catArr["$catInfo->razdid"]['list'])) self::$catArr["$catInfo->razdid"]['list'] = array();
                     self::$catArr["$catInfo->razdid"]['list'][] = "$catInfo->zapid"; //массив вложенных категорий
                     self::$catArr["$catInfo->zapid"]['cat_url'] = "/catalog/$catInfo->zapid/"; //URL категории
-                    self::$catArr["$catInfo->zapid"]['cat_url'] = "/catalog/$catInfo->zapid/"; //Изображение категории
+                    // self::$catArr["$catInfo->zapid"]['cat_img'] = "/catalog/$catInfo->zapid/"; //Изображение категории
                     self::$catArr["$catInfo->zapid"]['picture_arr'] = array(
                         'small' => array(
                             '1' => array('url'=>$domainImg.$imgPAth.'p'.$catInfo->zapid.'_1min.jpg','watermark'=>false),
@@ -112,7 +112,7 @@ trait CustomFeedgenMethods {
             SysLogs::addLog('Feedgen: Attr types array already exist');
         }else{            
             ##################[ Формирование массива атрибутов ]################
-            self::$prodAttrType = array();
+            // self::$prodAttrType = array();
             
             //Для теста жестко установим значения ------------------------------
             
@@ -139,7 +139,7 @@ trait CustomFeedgenMethods {
         if (self::$prodAttr !== null) {
             SysLogs::addLog('Feedgen: Attr array already exist');
         }else{
-            self::$prodAttr = array();
+            // self::$prodAttr = array();
             
             //Параметры товаров в привязкам к фильтрамФормат {"prodid"=>{"typeid"=>123, "value"=>""}}
             self::$prodAttr = array(   
@@ -262,7 +262,7 @@ trait CustomFeedgenMethods {
                 
                 $item['vendor_id'] = SysBF::updTranslitStr(strtolower(trim($prod->vendorname))); //$prod->id_vendor;
                 $item['vendor'] = $prod->vendorname;
-                $item['vendor_code'] = null;
+                $item['vendor_code'] = $prod->partnumber;
                 
                 $item['vendor_arr'] = array();
                 $item['vendor_arr']['vend_id'] = SysBF::updTranslitStr(strtolower(trim($prod->vendorname)));
@@ -329,7 +329,13 @@ trait CustomFeedgenMethods {
                 $item['description'] = $item['description_full'];
                 
                 $item['partnumber'] = (!empty($prod->partnumber))?$prod->partnumber:'';
-                
+
+                $item['condition_type'] = array(
+                    'condition' => 'preowned',
+                    'quality' => 'excellent',
+                    'reason' => 'Следы потертостей на корпусе, проведена предпродажная подготовка'
+                );
+
                 $item['descr_cdata']= true;
                 $item['outlets'] = null;
 
@@ -379,10 +385,10 @@ trait CustomFeedgenMethods {
                     $item['gross'] = array (//Вес в Кг и габариты в см БРУТТО
                         'weight_unit' => 'кг',
                         'size_unit' => 'см',
-                        'weight' => 60,
-                        'length' => 70,
-                        'width' => 80,
-                        'height' => 90,
+                        'weight' => 0,
+                        'length' => 0,
+                        'width' => 0,
+                        'height' => 0,
                     );  
                 }
                 

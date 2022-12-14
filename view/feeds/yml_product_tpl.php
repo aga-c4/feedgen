@@ -115,6 +115,13 @@ if (isset($item['netto_split'])) {
 }
 //Конец вывода размеров и веса
 
+if (isset($item['condition_type']) && is_array($item['condition_type']) && !empty($item['condition_type']['condition'])){
+    $tplBlock .= '    <condition type="'.$item['condition_type']['condition'].'">'."\n";
+    if (isset($item['condition_type']['quality'])) $tplBlock .= '        <quality>'.$item['condition_type']['quality'] . "</quality>\n";
+    if (isset($item['condition_type']['reason'])) $tplBlock .= '        <reason>'.$item['condition_type']['reason'] . "</reason>\n";
+    $tplBlock .= "    </condition>\n";
+}
+
 if (isset($item['marker'])) $tplBlock .= '    <marker>'.((!empty($item['marker']))?'true':'false') .'</marker>'."\n";
 if (isset($item['date_create'])) $tplBlock .= '    <date_create ts="' . $item['ts_create'] . '">' . $item['date_create'] .'</date_create>'."\n";
 if (isset($item['date_upd'])) $tplBlock .= '    <date_upd ts="' . $item['ts_upd'] . '">' . $item['date_upd'] .'</date_upd>'."\n";

@@ -159,8 +159,17 @@ class Feedgen {
      * @var array массив данных по складам, или false, если нет данных 
      */
     private $outlets = false;
-    
-    
+
+    /**
+     * @var array массив деф размеров и веса БРУТТО категорий типа ("catId1"=>array('weight_unit'=>'кг','size_unit'=>'см','weight' => 0,'length' => 0,'width' => 0,'height' => 0},"catId2"=>false, ...)))
+     */
+    private $grossCatDef = array();
+
+    /**
+     * @var array массив деф размеров и веса НЕТТО категорий типа ("catId1"=>array('weight_unit'=>'кг','size_unit'=>'см','weight' => 0,'length' => 0,'width' => 0,'height' => 0},"catId2"=>false, ...)))
+     */
+    private $nettoCatDef = array();
+
     /**
      * @var array массив видимости категорий типа ("catId1"=>array("vendId","vendId2",...),"catId2"=>1,"list"=>array("id1","id2","id3"....))) 
      */
@@ -784,6 +793,8 @@ class Feedgen {
         $catvendListOnly = $this->getParam('catvend_list_only',false);
         $catListExeptions = $this->getParam('cat_list_exeptions',false);
         $catvendListExeptions = $this->getParam('catvend_list_only',false);
+        $grossCatDef = $this->getParam('gross_cat_def',false);
+        $nettoCatDef = $this->getParam('netto_cat_def',false);
         
         //От рутовых категорий проставим разрешение или запрещение видимости товаров в категориях
         if (!is_array($catListOnly) && !is_array($catvendListOnly)) {
@@ -814,7 +825,15 @@ class Feedgen {
         if (is_array($catvendListExeptions)) {//Список запрещенных категория+вендор
             foreach($catvendListExeptions as $catId=>$catVal) $this->catViewUpd($catId,'catnoview',$catVal);
         }
-        
+
+        //Размеры и вес
+        if (is_array($grossCatDef)) {//Список запрещенных категория+вендор
+            foreach($grossCatDef as $catId=>$catVal) $this->catViewUpd($catId,'grossCatDef',$catVal);
+        }
+        if (is_array($nettoCatDef)) {//Список запрещенных категория+вендор
+            foreach($nettoCatDef as $catId=>$catVal) $this->catViewUpd($catId,'nettoCatDef',$catVal);
+        }
+
         SysLogs::addLog('Feedgen: Categories view generate Ok!');
         return true;
     }
@@ -834,13 +853,18 @@ class Feedgen {
         if ($typeVal==='catview'){ //Добавление разрешения
             if (!is_array($this->catViewOnly)) $this->catViewOnly = array();
             $this->catViewOnly["$catId"] = $curValue;
-            $curAction = 'catview';
         }elseif($typeVal==='catnoview'){ //Добавление исключения
             if (!is_array($this->catViewExeptions)) $this->catViewExeptions = array();
             $this->catViewExeptions["$catId"] = $curValue;
-            $curAction = 'catnoview';
-        }  
-        
+        }elseif($typeVal==='grossCatDef'){ //Добавление исключения
+            if (!is_array($this->grossCatDef)) $this->grossCatDef = array();
+            $this->grossCatDef["$catId"] = $curValue;
+        }
+        elseif($typeVal==='nettoCatDef'){ //Добавление исключения
+            if (!is_array($this->nettoCatDef)) $this->nettoCatDef = array();
+            $this->nettoCatDef["$catId"] = $curValue;
+        }
+
         //Рекурсивно вызовем функцию для нижестоящих
         $full_list_upd = false;
         if (isset(self::$catArr["$catId"])){
@@ -853,7 +877,7 @@ class Feedgen {
                 $levelCounter++;
                 $catInfo['full_list'] = $catInfo['list']; //Список всех вложенных ниже категорий и свой id там же
                 foreach ($catInfo['list'] as $inCatId) {
-                    $full_list = $this->catViewUpd($inCatId,$curAction,$curValue);
+                    $full_list = $this->catViewUpd($inCatId,$typeVal,$curValue);
                     if ($typeVal==="catview" && $catVal===true){ //Заполняем при первичном прогоне
                         if (is_array($full_list) && count($full_list)) foreach ($full_list as $value) $catInfo['full_list'][] = $value;
                         self::$catArr["$catId"]['full_list'] = $catInfo['full_list'];
@@ -1465,12 +1489,26 @@ class Feedgen {
 
         if (isset($prodInfo['netto'])) $prodInfo['netto'] = $this->sizeWaightUpd($prodInfo['netto']);
         if (isset($prodInfo['gross'])) $prodInfo['gross'] = $this->sizeWaightUpd($prodInfo['gross']);
+
+        if ((!isset($prodInfo['gross']) || $prodInfo['gross']===false)
+            && is_array($this->grossCatDef)
+            && isset($this->grossCatDef[(string)$prodInfo['cat_id']])
+            && is_array($this->grossCatDef[(string)$prodInfo['cat_id']])) {
+            $prodInfo['gross'] = $this->grossCatDef[(string)$prodInfo['cat_id']];
+        }
+
+        if ((!isset($prodInfo['netto']) || $prodInfo['netto']===false)
+            && is_array($this->nettoCatDef)
+            && isset($this->nettoCatDef[(string)$prodInfo['cat_id']])
+            && is_array($this->nettoCatDef[(string)$prodInfo['cat_id']])) {
+            $prodInfo['netto'] = $this->nettoCatDef[(string)$prodInfo['cat_id']];
+        }
         
         if ((!isset($prodInfo['netto']) || !is_array($prodInfo['netto'])) 
                 && isset($prodInfo['gross']) && is_array($prodInfo['gross']) 
                 && $this->getParam('gross_to_netto_upd',false)) $prodInfo['netto'] = $prodInfo['gross'];
-        if ($this->getParam('gross_required',false) && !is_array($prodInfo['gross'])) return false;
-        if ($this->getParam('netto_required',false) && !is_array($prodInfo['netto'])) return false;
+        if ($this->getParam('gross_required',false) && (!isset($prodInfo['gross']) || !is_array($prodInfo['gross']))) return false;
+        if ($this->getParam('netto_required',false) && (!isset($prodInfo['netto']) || !is_array($prodInfo['netto']))) return false;
         
         //Проверка на размеры и веса всех видов
         $max_gross_size_weight = $this->getParam('max_gross_size_weight',false);
@@ -1588,10 +1626,10 @@ class Feedgen {
         if (!is_array($sizeWeight)) return false;
         if (empty($sizeWeight['weight_unit'])) $sizeWeight['weight_unit'] = 'см';
         if (empty($sizeWeight['size_unit'])) $sizeWeight['size_unit'] = 'кг';
-        if (isset($sizeWeight['weight'])) $sizeWeight['weight'] = round($sizeWeight['weight'],2); else return false;
-        if (isset($sizeWeight['length'])) $sizeWeight['length'] = ceil($sizeWeight['length']); else return false;
-        if (isset($sizeWeight['width'])) $sizeWeight['width'] = ceil($sizeWeight['width']); else return false;
-        if (isset($sizeWeight['height'])) $sizeWeight['height'] = ceil($sizeWeight['height']); else return false;
+        if (!empty($sizeWeight['weight'])) $sizeWeight['weight'] = round($sizeWeight['weight'],2); else return false;
+        if (!empty($sizeWeight['length'])) $sizeWeight['length'] = ceil($sizeWeight['length']); else return false;
+        if (!empty($sizeWeight['width'])) $sizeWeight['width'] = ceil($sizeWeight['width']); else return false;
+        if (!empty($sizeWeight['height'])) $sizeWeight['height'] = ceil($sizeWeight['height']); else return false;
         return $sizeWeight;
     } 
             
@@ -1832,9 +1870,11 @@ class Feedgen {
         
         //Ограничения вывода ------------------------------
         $minprice = $this->getParam('minprice',false);
+        $maxprice = $this->getParam('maxprice',false);
         if ($this->getParam('use_minprice',false) && !empty($minprice) && $prodInfo['price']<$minprice) return false;
-        if ($this->getParam('null_price',false) && empty($prodInfo['price'])) return false;  
-        
+        if ($this->getParam('use_maxprice',false) && !empty($maxprice) && $prodInfo['price']>$maxprice) return false;
+        if ($this->getParam('null_price',false) && empty($prodInfo['price'])) return false;
+
         //Добавить цену до мин порога
         $minpriceto = $this->getParam('minpriceto',false);
         if (!empty($minpriceto) && $prodInfo['price']<$minpriceto) $prodInfo['price'] = $minpriceto;
@@ -2117,7 +2157,7 @@ class Feedgen {
      * @param type $priceType - google для гуглевого формата типа 11.22 RUB
      * @return mixed обновленный $prodInfo или false, если тован не подлежит публикации
      */
-    private static function formatPrice($price,$priceType,$currency='RUR'){
+    public static function formatPrice($price,$priceType,$currency='RUR'){
         $result = $price;
         if ('google'===$priceType)$result = sprintf("%.2f",$price).' ' . $currency;
         if ('d2'===$priceType)$result = sprintf("%.2f",$price);
