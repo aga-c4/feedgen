@@ -856,11 +856,10 @@ class Feedgen {
         }elseif($typeVal==='catnoview'){ //Добавление исключения
             if (!is_array($this->catViewExeptions)) $this->catViewExeptions = array();
             $this->catViewExeptions["$catId"] = $curValue;
-        }elseif($typeVal==='grossCatDef'){ //Добавление исключения
+        }elseif($typeVal==='grossCatDef'){ //Добавление дефолтовых весов-размеров БРУТТО
             if (!is_array($this->grossCatDef)) $this->grossCatDef = array();
             $this->grossCatDef["$catId"] = $curValue;
-        }
-        elseif($typeVal==='nettoCatDef'){ //Добавление исключения
+        }elseif($typeVal==='nettoCatDef'){ //обавление дефолтовых весов-размеров НЕТТО
             if (!is_array($this->nettoCatDef)) $this->nettoCatDef = array();
             $this->nettoCatDef["$catId"] = $curValue;
         }
@@ -1565,8 +1564,8 @@ class Feedgen {
                 ),
                 array(
                     'code' => 'gross_size_hwl',
-                    'name' => 'БРУТТО размер (ВхШхГ) ('.$prodInfo['gross']['size_unit'].')',
-                    'value' => $prodInfo['gross']['height'] . '/' . $prodInfo['gross']['width'] . '/' . $prodInfo['gross']['length'],
+                    'name' => 'БРУТТО размер (ДхШхВ) ('.$prodInfo['gross']['size_unit'].')',
+                    'value' =>  $prodInfo['gross']['length'] . '/' . $prodInfo['gross']['width'] . '/' . $prodInfo['gross']['height'],
                 ),
             );
         } 
@@ -1579,17 +1578,17 @@ class Feedgen {
                 ),
                 array(
                     'code' => 'netto_size_hwl',
-                    'name' => 'НЕТТО размер (ВхШхГ) ('.$prodInfo['netto']['size_unit'].')',
-                    'value' => $prodInfo['netto']['height'] . '/' . $prodInfo['netto']['width'] . '/' . $prodInfo['netto']['length'],
+                    'name' => 'НЕТТО размер (ДхШхВ) ('.$prodInfo['netto']['size_unit'].')',
+                    'value' => $prodInfo['netto']['length'] . '/' . $prodInfo['netto']['width'] . '/' . $prodInfo['netto']['height'],
                 ),
             );
         } 
         
         if ($this->getParam('use_gross_dimensions',false) && is_array($prodInfo['gross'])){
-            $prodInfo['gross_dimensions'] = $prodInfo['gross']['height'] . '/' . $prodInfo['gross']['width'] . '/' . $prodInfo['gross']['length'];
+            $prodInfo['gross_dimensions'] = $prodInfo['gross']['length'] . '/' . $prodInfo['gross']['width'] . '/' . $prodInfo['gross']['height'];
         }
         if ($this->getParam('use_netto_dimensions',false) && is_array($prodInfo['netto'])){
-            $prodInfo['netto_dimensions'] = $prodInfo['netto']['height'] . '/' . $prodInfo['netto']['width'] . '/' . $prodInfo['netto']['length'];
+            $prodInfo['netto_dimensions'] = $prodInfo['netto']['length'] . '/' . $prodInfo['netto']['width'] . '/' . $prodInfo['netto']['height'];
         }
         
         if ($this->getParam('use_gross_weight',false) && is_array($prodInfo['gross'])){
@@ -1601,16 +1600,16 @@ class Feedgen {
         
         if ($this->getParam('use_gross_split',false) && is_array($prodInfo['gross'])){
             $prodInfo['gross_split'] = array(
-                'height' => $prodInfo['gross']['height'],
-                'width' => $prodInfo['gross']['width'],
                 'length' => $prodInfo['gross']['length'],
+                'width' => $prodInfo['gross']['width'],
+                'height' => $prodInfo['gross']['height'],
             );
         }
         if ($this->getParam('use_netto_split',false) && is_array($prodInfo['netto'])){
             $prodInfo['netto_split'] = array(
-                'height' => $prodInfo['netto']['height'],
-                'width' => $prodInfo['netto']['width'],
                 'length' => $prodInfo['netto']['length'],
+                'width' => $prodInfo['netto']['width'],
+                'height' => $prodInfo['netto']['height'],
             );
         }
         

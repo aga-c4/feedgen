@@ -368,6 +368,7 @@ trait CustomFeedgenMethods {
                 $item['instock_status'] = $inStock;
                 $item['instock_outlets_status'] = array('main_store'=>$inStock,'spb_store'=>InStock_Empty);
                 $item['instock_qty'] = $prod->n1; //Если не задано. то будет расчитываться по маске. Если не можем установить, устанавливаем null
+                $item['count'] = $prod->n1; //Количество дял YML фидов
                 $item['instock_outlets_qty'] = array('main_store'=>$prod->n1,'spb_store'=>0); //Если не задано. то будет расчитываться по маске
                 
                 if ($use_netto_sw){//Забираем по требованию, может быть ресурсоемкой операцией

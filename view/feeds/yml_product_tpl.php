@@ -48,7 +48,7 @@ if (isset($item['warranty'])) $tplBlock .= '    <manufacturer_warranty>'.$item['
 if (isset($item['country'])) $tplBlock .= '    <country_of_origin>'.$item['country'] .'</country_of_origin>'."\n";
 if (isset($item['barcode'])) $tplBlock .= '    <barcode>'.$item['barcode'] .'</barcode>'."\n";  
 if (isset($item['description'])) $tplBlock .= '    <description>' . $item['description'] . '</description>'."\n";
-
+if (isset($item['count'])) $tplBlock .= '    <count>' . $item['count'] . '</count>'."\n";
 if (isset($item['outlets']) && is_array($item['outlets'])){ 
     $tplBlock .= '    <outlets>'."\n";
     foreach ($item['outlets'] as $inItem) $tplBlock .= '        <outlet id="'.$inItem['id'] .'" instock="'.$inItem['qty'] .'"/>'."\n";      
