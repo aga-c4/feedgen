@@ -252,7 +252,14 @@ trait CustomFeedgenMethods {
                 $item['prod_id'] = $prodId = strval($prod->zapid);
                 $item['1c_id'] = $prodId = strval($prod->zapid);
                 $item['shop_sku'] = strval($prod->zapid);
-                                
+
+                $d_date = Feedgen::tmstFrStr($prod->d_date);
+                $lastedit = Feedgen::tmstFrStr($prod->lastedit);
+                $item['ts_create'] = $d_date;
+                $item['ts_upd'] = $lastedit;
+                $item['ts_upd_price'] = $lastedit;
+                $item['ts_upd_photo'] = $d_date;
+
                 //$item['offer_available'] = true;
                 
                 $item['offer_bid'] = null;
@@ -346,15 +353,15 @@ trait CustomFeedgenMethods {
                 $domainImg = Feedgen::getRootCatVal($domainImgParam,strval($item['cat_id']));   
                 $item['picture_arr'] = array(
                     'small' => array(
-                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1min.jpg','watermark'=>true,'width'=>640,'height'=>480),
+                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1min.jpg?' . $lastedit,'watermark'=>true,'width'=>640,'height'=>480),
                     ),
                     'medium' => array(
-                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1.jpg','watermark'=>true,'width'=>1024,'height'=>768),
+                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1.jpg?' . $lastedit,'watermark'=>true,'width'=>1024,'height'=>768),
                     ),
                     'big' => array(
-                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg','watermark'=>true,'width'=>1280,'height'=>1024),
+                        '1' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg?' . $lastedit,'watermark'=>true,'width'=>1280,'height'=>1024),
                     ),
-                    'gpic' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg','watermark'=>false,'width'=>600,'height'=>600),
+                    'gpic' => array('url'=>$domainImg.$imgPAth.'p'.$prodId.'_1big.jpg?' . $lastedit,'watermark'=>false,'width'=>600,'height'=>600),
                     'gpicw' => null, //Если есть гуглевое изображение с водяным знаком. то сюда его.
                 );
                 
@@ -392,13 +399,6 @@ trait CustomFeedgenMethods {
                         'height' => 0,
                     );  
                 }
-                
-                $d_date = Feedgen::tmstFrStr($prod->d_date);
-                $lastedit = Feedgen::tmstFrStr($prod->lastedit);
-                $item['ts_create'] = $d_date;
-                $item['ts_upd'] = $lastedit;
-                $item['ts_upd_price'] = $lastedit;
-                $item['ts_upd_photo'] = $d_date;
                 
                 $result[] = $item;
             }
