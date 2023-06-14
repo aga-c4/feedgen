@@ -264,9 +264,13 @@ trait CustomFeedgenMethods {
                 
                 $item['offer_bid'] = null;
                 $item['offer_credit'] = null;
-                
-                $item['type_prefix'] = null;
-                
+
+                if ($prod->razdid==31190) { //Для товаров Кости Ершова префикс передаем
+                    $item['type_prefix'] = $prod->prefix;
+                } else {
+                    $item['type_prefix'] = null;
+                }
+
                 $item['vendor_id'] = SysBF::updTranslitStr(strtolower(trim($prod->vendorname))); //$prod->id_vendor;
                 $item['vendor'] = $prod->vendorname;
                 $item['vendor_code'] = $prod->partnumber;
@@ -337,11 +341,13 @@ trait CustomFeedgenMethods {
                 
                 $item['partnumber'] = (!empty($prod->partnumber))?$prod->partnumber:'';
 
-                $item['condition_type'] = array(
-                    'condition' => 'preowned',
-                    'quality' => 'excellent',
-                    'reason' => 'Следы потертостей на корпусе, проведена предпродажная подготовка'
-                );
+                if ($prod->razdid!=31190) { //Для товаров Кости Ершова это не передаем
+                    $item['condition_type'] = array(
+                        'condition' => 'preowned',
+                        'quality' => 'excellent',
+                        'reason' => 'Следы потертостей на корпусе, проведена предпродажная подготовка'
+                    );
+                }
 
                 $item['descr_cdata']= true;
                 $item['outlets'] = null;
