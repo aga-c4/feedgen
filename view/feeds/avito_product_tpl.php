@@ -41,7 +41,7 @@ if ($this->getParam('avito_goods_type',false)) {//Можно задать про
 
 if (isset($item['name'])) $tplBlock .= '    <Title>'.$item['name'] .'</Title>'."\n";
 if (isset($item['price'])) $tplBlock .= '    <price>'.Feedgen::formatPrice($item['price'],$item['price_type'],$item['currency']) .'</price>'."\n";
-if (isset($item['instock_qty'])) $tplBlock .= '    <stock>'.$item['instock_qty'] .'</stock>'."\n";
+if (isset($item['count'])) $tplBlock .= '    <stock>'.$item['count'] .'</stock>'."\n";
 if (isset($item['picture']) && is_array($item['picture'])) {
     $pctCounter = 0;
     foreach ($item['picture'] as $inItem) {
